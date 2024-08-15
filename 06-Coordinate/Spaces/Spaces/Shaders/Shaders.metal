@@ -49,7 +49,7 @@ vertex VertexOut vertex_main(
                              constant Uniforms &uniforms [[buffer(11)]]
                              )
 {
-    float4 position = uniforms.viewMatrix * uniforms.modelMatrix * in.position;
+    float4 position = uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix * in.position;
     VertexOut out {
         .position = position
     };
