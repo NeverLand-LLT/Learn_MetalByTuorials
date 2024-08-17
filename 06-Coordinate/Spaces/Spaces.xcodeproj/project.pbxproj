@@ -19,6 +19,7 @@
 		824770FA2AA804E20095AB72 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 824770F92AA804E20095AB72 /* Shaders.metal */; };
 		824771002AA80C930095AB72 /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824770FF2AA80C930095AB72 /* MetalView.swift */; };
 		824A1AF22AA83518009BCA63 /* VertexDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824A1AF12AA83518009BCA63 /* VertexDescriptor.swift */; };
+		9AD1CFBF2C708B12001D7FE0 /* Transform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AD1CFBE2C708B12001D7FE0 /* Transform.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		824770F92AA804E20095AB72 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		824770FF2AA80C930095AB72 /* MetalView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalView.swift; sourceTree = "<group>"; };
 		824A1AF12AA83518009BCA63 /* VertexDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VertexDescriptor.swift; sourceTree = "<group>"; };
+		9AD1CFBE2C708B12001D7FE0 /* Transform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transform.swift; sourceTree = "<group>"; };
 		A7F7AEDF2C6D928D0084BA5F /* Common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
 		A7F7AEE32C6D94800084BA5F /* Spaces-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Spaces-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -101,6 +103,7 @@
 				822EF52E2AA86872008CC2C8 /* Rendering.swift */,
 				824A1AF12AA83518009BCA63 /* VertexDescriptor.swift */,
 				822EF52A2AA86608008CC2C8 /* Model.swift */,
+				9AD1CFBE2C708B12001D7FE0 /* Transform.swift */,
 				822EF5312AA869CA008CC2C8 /* Shaders */,
 				822EF52C2AA866FF008CC2C8 /* Utility */,
 				822EF52D2AA86709008CC2C8 /* Models */,
@@ -227,6 +230,7 @@
 			files = (
 				822EF52B2AA86608008CC2C8 /* Model.swift in Sources */,
 				824A1AF22AA83518009BCA63 /* VertexDescriptor.swift in Sources */,
+				9AD1CFBF2C708B12001D7FE0 /* Transform.swift in Sources */,
 				824770F72AA7FDDA0095AB72 /* Renderer.swift in Sources */,
 				822EF5292AA865D2008CC2C8 /* MathLibrary.swift in Sources */,
 				824770E62AA7FA0B0095AB72 /* ContentView.swift in Sources */,

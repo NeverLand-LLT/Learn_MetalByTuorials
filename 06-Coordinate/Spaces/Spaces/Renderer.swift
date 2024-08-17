@@ -89,10 +89,11 @@ class Renderer: NSObject {
             alpha: 1.0)
         metalView.delegate = self
         
-        // 在 init(metalView:) 底部添加代码。 配置 uniform
-        let translation = float4x4(translation: [0.5, -0.4, 0])
-        let rotation = float4x4(rotation: [0, 0, Float(45).degreesToRadians])
-        uniforms.modelMatrix = translation * rotation
+//        // 在 init(metalView:) 底部添加代码。 配置 uniform
+//        let translation = float4x4(translation: [0.5, -0.4, 0])
+//        let rotation = float4x4(rotation: [0, 0, Float(45).degreesToRadians])
+//        uniforms.modelMatrix = translation * rotation
+            
         
         // Tips： 场景中所有对象都应沿着与摄像机相反的方向移动。所以调用 inverse 。当相机向右移动时， 整个世界 向左移动了0.8个单元
         uniforms.viewMatrix = float4x4(translation: [0.8,0,0]).inverse
@@ -141,10 +142,14 @@ extension Renderer: MTKViewDelegate {
         timer += 0.005
         uniforms.viewMatrix = float4x4.identity
         uniforms.viewMatrix = float4x4(translation: [0, 0, -3]).inverse
-        let translationMatrix = float4x4(translation: [0, -0.6, 0])
+//        let translationMatrix = float4x4(translation: [0, -0.6, 0])
 //        let translationMatrix = float4x4(translation: [0, -0.6, 98])
-        let rotationMatrix = float4x4(rotationY: sin(timer))
-        uniforms.modelMatrix = translationMatrix * rotationMatrix
+//        let rotationMatrix = float4x4(rotationY: sin(timer))
+//        uniforms.modelMatrix = translationMatrix * rotationMatrix
+        
+        model.position.y = -0.6
+        model.rotation.y = sin(timer)
+        uniforms.modelMatrix = model.transform.modelMatrix
         
         model.render(encoder: renderEncoder)
         
