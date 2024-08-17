@@ -101,12 +101,24 @@ class Renderer: NSObject {
 }
 
 extension Renderer: MTKViewDelegate {
+    // 因为外面SWiftUI 视图框架，设置了固定高度，没有设置固定宽度，所以APP启动时，会走这里。
+    // 如果外面设置了固定宽高。 这个代理不会走。从而导致 没有走设置投影视角初始化
     func mtkView(
         _ view: MTKView,
         drawableSizeWillChange size: CGSize
     ) {
+        // 使用 视野为45°，近平面位0.1 远平面为100
+        let aspect = Float(view.bounds.width) / Float(view.bounds.height)
+        let projectionMatrix = float4x4(
+            projectionFov: Float(45).degreesToRadians,
+            near: 0.1,
+            far: 100,
+//            far: 1000, // 当 translation z轴改为 98 + 相机back -3 超过 100 far就看不到了
+            aspect: aspect)
+        uniforms.projectionMatrix = projectionMatrix
     }
     
+    // 当视图大小发生变化
     func draw(in view: MTKView) {
         guard
             let commandBuffer = Self.commandQueue.makeCommandBuffer(),
@@ -118,24 +130,19 @@ extension Renderer: MTKViewDelegate {
         }
         
         renderEncoder.setRenderPipelineState(pipelineState)
-        renderEncoder.setTriangleFillMode(.lines)
+//        renderEncoder.setTriangleFillMode(.lines) // 如果要实现实心火车，注释掉这句
         
         renderEncoder.setVertexBytes(&uniforms,
                                      length: MemoryLayout<Uniforms>.stride,
                                      index: 11)
         
-        let aspect = Float(view.bounds.width) / Float(view.bounds.height)
-        let projectionMatrix = float4x4(
-            projectionFov: Float(45).degreesToRadians,
-            near: 0.1,
-            far: 100,
-            aspect: aspect)
-        uniforms.projectionMatrix = projectionMatrix
+        
         
         timer += 0.005
         uniforms.viewMatrix = float4x4.identity
         uniforms.viewMatrix = float4x4(translation: [0, 0, -3]).inverse
         let translationMatrix = float4x4(translation: [0, -0.6, 0])
+//        let translationMatrix = float4x4(translation: [0, -0.6, 98])
         let rotationMatrix = float4x4(rotationY: sin(timer))
         uniforms.modelMatrix = translationMatrix * rotationMatrix
         
