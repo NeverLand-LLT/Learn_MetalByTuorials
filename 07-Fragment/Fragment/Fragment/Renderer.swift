@@ -42,6 +42,8 @@ class Renderer: NSObject {
   var quadPipelineState: MTLRenderPipelineState!
 
   var options: Options
+    
+    var params = Params()
 
   lazy var model: Model = {
     Model(device: Renderer.device, name: "train.usdz")
@@ -106,6 +108,10 @@ extension Renderer: MTKViewDelegate {
     _ view: MTKView,
     drawableSizeWillChange size: CGSize
   ) {
+      
+      params.width = UInt32(size.width)
+      params.height = UInt32(size.height)
+      
     let aspect =
       Float(view.bounds.width) / Float(view.bounds.height)
     let projectionMatrix =
@@ -145,10 +151,13 @@ extension Renderer: MTKViewDelegate {
           descriptor: descriptor) else {
         return
     }
+      
+      renderEncoder.setFragmentBytes(&params, length: MemoryLayout<Params>.stride, index: 12)
 
     if options.renderChoice == .train {
       renderModel(encoder: renderEncoder)
     } else {
+        
       renderQuad(encoder: renderEncoder)
     }
 
