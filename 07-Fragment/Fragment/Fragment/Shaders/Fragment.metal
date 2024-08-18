@@ -103,6 +103,17 @@ fragment float4 fragment_main(
     //    return in.position;
     
 //    float3 color = normalize(in.position.xyz);
-    return float4(in.normal, 1.0);
+//    return float4(in.normal, 1.0);
+    
+    
+    // Hemispheric Lighting
+    
+//    float4 sky = float4(0.34, 0.9, 1.0, 1.0);
+    float4 sky = float4(1.0, 0.0, 0.0, 1.0);
+    float4 earth = float4(0.29, 0.58, 0.2, 1.0);
+    // 法线根据上面的坐标正常是 -1 到 1， 而 mix是(0 ~ 1) ，所以需要 转换
+    float intensity = in.normal.y * 0.5 + 0.5;
+    return mix(earth, sky, intensity);
+    
 }
 

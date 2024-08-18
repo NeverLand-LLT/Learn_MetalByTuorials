@@ -40,6 +40,7 @@ class Renderer: NSObject {
   static var library: MTLLibrary!
   var modelPipelineState: MTLRenderPipelineState!
   var quadPipelineState: MTLRenderPipelineState!
+    let depthStencilState: MTLDepthStencilState?
 
   var options: Options
     
@@ -51,6 +52,16 @@ class Renderer: NSObject {
 
   var timer: Float = 0
   var uniforms = Uniforms()
+    
+    static func buildDepthStencilState() -> MTLDepthStencilState? {
+        // 1. 创建一个描述符，用于初始化深度模版状态
+        let descriptor = MTLDepthStencilDescriptor()
+        // 2. 指定如何比较当前片段和已处理片段。 使用less的比较函数: 如果当前片段深度小于帧缓冲区中前一个片段的深度，则当前片段将替换该前一个片段。
+        descriptor.depthCompareFunction = .less
+        // 3.说明是否编写深度值。 如果会进行多重处理(mutiply passes) 第12章 Render Passes,会想要读取已经绘制的片段, 这种情况需要设置为false。 但是当绘深度信息进行绘制 深度的对象，永远为true。
+        descriptor.isDepthWriteEnabled = true
+        return Renderer.device.makeDepthStencilState(descriptor: descriptor)
+    }
 
   init(metalView: MTKView, options: Options) {
     guard
@@ -76,6 +87,9 @@ class Renderer: NSObject {
     pipelineDescriptor.fragmentFunction = fragmentFunction
     pipelineDescriptor.colorAttachments[0].pixelFormat =
       metalView.colorPixelFormat
+      
+      pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float // 必须与metalView设置 depth 格式一致
+      
     do {
       quadPipelineState =
       try device.makeRenderPipelineState(
@@ -90,13 +104,21 @@ class Renderer: NSObject {
       fatalError(error.localizedDescription)
     }
     self.options = options
+      depthStencilState = Renderer.buildDepthStencilState()
+
     super.init()
+      
     metalView.clearColor = MTLClearColor(
       red: 1.0,
       green: 1.0,
       blue: 0.9,
       alpha: 1.0)
     metalView.delegate = self
+      
+    // ● metalView 中设置 模版测试数据格式，默认是 invaild, 它通知视图不需要创建深度和模版纹理
+      metalView.depthStencilPixelFormat = .depth32Float // 设置保存深度信息格式，默认是invalid
+    
+      
     mtkView(
       metalView,
       drawableSizeWillChange: metalView.drawableSize)
@@ -151,8 +173,10 @@ extension Renderer: MTKViewDelegate {
           descriptor: descriptor) else {
         return
     }
-      
+      renderEncoder.setDepthStencilState(depthStencilState)
+
       renderEncoder.setFragmentBytes(&params, length: MemoryLayout<Params>.stride, index: 12)
+      
 
     if options.renderChoice == .train {
       renderModel(encoder: renderEncoder)
