@@ -50,7 +50,7 @@ using namespace metal;
 //}
 
 fragment float4 fragment_main(
-                              constant Params &params [[buffer(12)]],
+                              constant Params &params [[buffer(ParamsBuffer)]],
                               VertexOut in [[stage_in]])
 {
     

@@ -36,8 +36,8 @@ using namespace metal;
 #import "ShaderDefs.h"
 
 struct VertexIn {
-  float4 position [[attribute(0)]];
-    float3 normal [[attribute(1)]];
+    float4 position [[attribute(Position)]];
+    float3 normal [[attribute(Normal)]];
 };
 //
 //struct VertexOut {
@@ -47,7 +47,7 @@ struct VertexIn {
 //
 vertex VertexOut vertex_main(
   VertexIn in [[stage_in]],
-  constant Uniforms &uniforms [[buffer(11)]])
+  constant Uniforms &uniforms [[buffer(UniformsBuffer)]])
 {
   float4 position =
     uniforms.projectionMatrix * uniforms.viewMatrix

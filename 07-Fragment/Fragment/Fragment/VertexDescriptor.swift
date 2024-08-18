@@ -42,23 +42,36 @@ extension MDLVertexDescriptor {
     static var defaultLayout: MDLVertexDescriptor {
         let vertexDescriptor = MDLVertexDescriptor()
         var offset = 0
-        vertexDescriptor.attributes[0] = MDLVertexAttribute(
+        vertexDescriptor.attributes[Position.index] = MDLVertexAttribute(
             name: MDLVertexAttributePosition,
             format: .float3,
             offset: 0,
-            bufferIndex: 0)
+            bufferIndex: VertexBuffer.index)
         offset += MemoryLayout<float3>.stride
         
         // 添加火车法线
-        vertexDescriptor.attributes[1] = MDLVertexAttribute(
+        vertexDescriptor.attributes[Normal.index] = MDLVertexAttribute(
             name: MDLVertexAttributeNormal,
             format: .float3,
             offset: offset,
-            bufferIndex: 0)
+            bufferIndex: VertexBuffer.index)
         offset += MemoryLayout<float3>.stride
         
         
-        vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: offset)
+        vertexDescriptor.layouts[VertexBuffer.index] = MDLVertexBufferLayout(stride: offset)
         return vertexDescriptor
     }
+}
+
+
+extension Attributes {
+  var index: Int {
+    return Int(self.rawValue)
+  }
+}
+
+extension BufferIndices {
+  var index: Int {
+    return Int(self.rawValue)
+  }
 }
