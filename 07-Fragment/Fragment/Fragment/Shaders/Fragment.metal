@@ -33,12 +33,13 @@
 #include <metal_stdlib>
 using namespace metal;
 #import "Common.h"
+#import "ShaderDefs.h"
 
-struct VertexOut {
-    float4 position [[position]];
-    float3 normal;
-    
-};
+//struct VertexOut {
+//    float4 position [[position]];
+//    float3 normal;
+//    
+//};
 
 //fragment float4 fragment_main(VertexOut in [[stage_in]])
 //{
@@ -101,7 +102,7 @@ fragment float4 fragment_main(
     // MARK: - Normalize
     //    return in.position;
     
-    float3 color = normalize(in.position.xyz);
+//    float3 color = normalize(in.position.xyz);
     return float4(in.normal, 1.0);
 }
 
