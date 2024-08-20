@@ -30,52 +30,29 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
+import Foundation
 import MetalKit
+/*
+ 一个模型通常具有多个引用相同纹理的submeshed ，为了不想重复加载此纹理，需要创建一个中央纹理控制器来保存纹理。
+ */
 
-struct Submesh {
-    struct Textures {
-        var baseColor: MTLTexture?
-    }
+enum TextureController {
+    // 使用字典存储已经加载过的纹理
+    static var textures: [String: MTLTexture] = [:]
     
-    var texture: Textures
-    
-    let indexCount: Int
-    let indexType: MTLIndexType
-    let indexBuffer: MTLBuffer
-    let indexBufferOffset: Int
-}
-
-extension Submesh {
-    init(mdlSubmesh: MDLSubmesh, mtkSubmesh: MTKSubmesh) {
-        indexCount = mtkSubmesh.indexCount
-        indexType = mtkSubmesh.indexType
-        indexBuffer = mtkSubmesh.indexBuffer.buffer
-        indexBufferOffset = mtkSubmesh.indexBuffer.offset
-        texture = Textures(material: mdlSubmesh.material)
-    }
-}
-
-// 1. 使用提供的子网络才是加载基色(漫反射)纹理
-private extension Submesh.Textures {
-    init(material: MDLMaterial?) {
-        baseColor = material?.texture(type: .baseColor)
-    }
-}
-
-// 2. MDLMaterialProperty.textureName 返回文件中的纹理名称，或者唯一标识
-private extension MDLMaterialProperty {
-    var textureName: String {
-        stringValue ?? UUID().uuidString
-    }
-}
-
-
-// 3. MDLMaterial.property(with)在子网格的材质中查找提供的属性
-private extension MDLMaterial {
-    func texture(type sematic: MDLMaterialSemantic) -> MTLTexture? {
-        if let property = property(with: sematic), property.type == .texture, let mdlTexture = property.textureSamplerValue?.texture {
-            return TextureController.loadTexture(texture: mdlTexture, name: property.textureName)
+    static func loadTexture(texture: MDLTexture, name: String) -> MTLTexture? {
+        if let texture = textures[name] {
+            return texture
         }
-        return nil
+        
+        let textureloader = MTKTextureLoader(device: Renderer.device)
+        // 更改纹理的原点 位于左下角。如果不设置这个，纹理将无法正确包着房子
+        let textureLoaderOptions: [MTKTextureLoader.Option: Any] = [.origin : MTKTextureLoader.Origin.bottomLeft]
+        let texture = try? textureloader.newTexture(texture: texture, options: textureLoaderOptions)
+        print("loaded texture from USD file")
+        textures[name] = texture
+        return texture
     }
 }
+
+

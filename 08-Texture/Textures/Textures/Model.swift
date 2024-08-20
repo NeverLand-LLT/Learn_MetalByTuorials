@@ -53,6 +53,7 @@ class Model: Transformable {
       url: assetURL,
       vertexDescriptor: .defaultLayout,
       bufferAllocator: allocator)
+      asset.loadTextures() // Model I/O 会将MDLTextureSampler 值添加到 submesh中。
     let (mdlMeshes, mtkMeshes) = try! MTKMesh.newMeshes(
       asset: asset,
       device: Renderer.device)
