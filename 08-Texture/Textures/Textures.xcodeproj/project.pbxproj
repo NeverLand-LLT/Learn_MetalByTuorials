@@ -25,6 +25,7 @@
 		827621AE2AA8779800CE91D1 /* Vertex.metal in Sources */ = {isa = PBXBuildFile; fileRef = 827621AD2AA8779800CE91D1 /* Vertex.metal */; };
 		827621B02AA8779E00CE91D1 /* Fragment.metal in Sources */ = {isa = PBXBuildFile; fileRef = 827621AF2AA8779E00CE91D1 /* Fragment.metal */; };
 		9AA39FF22C74EC9A00B8655F /* TextureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA39FF12C74EC9A00B8655F /* TextureController.swift */; };
+		9AA39FF42C76383700B8655F /* Texture.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9AA39FF32C76383700B8655F /* Texture.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 		827621AD2AA8779800CE91D1 /* Vertex.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Vertex.metal; sourceTree = "<group>"; };
 		827621AF2AA8779E00CE91D1 /* Fragment.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Fragment.metal; sourceTree = "<group>"; };
 		9AA39FF12C74EC9A00B8655F /* TextureController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureController.swift; sourceTree = "<group>"; };
+		9AA39FF32C76383700B8655F /* Texture.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Texture.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +126,7 @@
 				822EF52D2AA86709008CC2C8 /* Models */,
 				82A254542AA83E870054837F /* SwiftUI Views */,
 				824770E72AA7FA0C0095AB72 /* Assets.xcassets */,
+				9AA39FF32C76383700B8655F /* Texture.xcassets */,
 				824770E92AA7FA0C0095AB72 /* Textures.entitlements */,
 				824770EA2AA7FA0C0095AB72 /* Preview Content */,
 			);
@@ -208,6 +211,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				82133A3D2AAC1C6200D7C004 /* lowpoly-house.usdz in Resources */,
+				9AA39FF42C76383700B8655F /* Texture.xcassets in Resources */,
 				824770EC2AA7FA0C0095AB72 /* Preview Assets.xcassets in Resources */,
 				824770E82AA7FA0C0095AB72 /* Assets.xcassets in Resources */,
 			);

@@ -53,6 +53,27 @@ enum TextureController {
         textures[name] = texture
         return texture
     }
+    
+    static func loadTexture(name: String) -> MTLTexture? {
+        // 1
+        if let texture = textures[name] {
+            return texture
+        }
+        // 2 从 Asset catalog 中加载纹理
+        let textureLoader = MTKTextureLoader(device: Renderer.device)
+        let texture: MTLTexture?
+        texture = try? textureLoader.newTexture(
+            name: name,
+            scaleFactor: 1.0, // 因为纹理只有 1x 所以这里使用1.0
+            bundle: Bundle.main,
+            options: nil)
+        // 3 缓存纹理
+        if texture != nil {
+            print("loaded texture: \(name)")
+            textures[name] = texture
+        }
+        return texture
+    }
 }
 
 

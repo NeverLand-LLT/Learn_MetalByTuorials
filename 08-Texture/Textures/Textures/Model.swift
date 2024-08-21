@@ -64,4 +64,20 @@ class Model: Transformable {
   }
 }
 
+extension Model {
+    func setTexture(name: String, type: TextureIndices) {
+        /*
+         注意：这是分配纹理的快速且简单的修复方法。它仅适用于仅具有一种材质的简单模型。如果您经常从资源目录加载子网格纹理，则应该设置一个指向正确纹理的子网格初始值设定项。
+         */
+        if let texture = TextureController.loadTexture(name: name) {
+            switch type {
+            case BaseColor:
+                meshes[0].submeshes[0].texture.baseColor = texture
+            default:
+                break
+            }
+        }
+    }
+}
+
 // swiftlint:enable force_try
