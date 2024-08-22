@@ -47,7 +47,9 @@ enum TextureController {
         
         let textureloader = MTKTextureLoader(device: Renderer.device)
         // 更改纹理的原点 位于左下角。如果不设置这个，纹理将无法正确包着房子
-        let textureLoaderOptions: [MTKTextureLoader.Option: Any] = [.origin : MTKTextureLoader.Origin.bottomLeft]
+//        let textureLoaderOptions: [MTKTextureLoader.Option: Any] = [.origin : MTKTextureLoader.Origin.bottomLeft]
+        // 设置 mipmap
+        let textureLoaderOptions: [MTKTextureLoader.Option: Any] = [.origin : MTKTextureLoader.Origin.bottomLeft, .generateMipmaps: true]
         let texture = try? textureloader.newTexture(texture: texture, options: textureLoaderOptions)
         print("loaded texture from USD file")
         textures[name] = texture

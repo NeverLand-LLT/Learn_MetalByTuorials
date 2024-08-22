@@ -42,7 +42,7 @@ float4 fragment_main(
                      texture2d<float> baseColorTexture [[texture(BaseColor)]]
 ) {
 //    constexpr sampler textureSampler; // 默认Nearest，没有拉伸
-    constexpr sampler textureSampler(filter::linear, address::repeat);  // 通过拉伸，看不到像素格
+    constexpr sampler textureSampler(filter::linear, address::repeat, mip_filter::linear, max_anisotropy(8));  // filter::linear通过拉伸，看不到像素格; address::repeat over环绕方式；  mip_filter mimap处理 Normal/ linear; max_anissotropy 各向异性(锯齿处理，但是会减慢渲染)
     float3 baseColor = baseColorTexture.sample(textureSampler, in.uv * params.tiling).rgb;
     return float4(baseColor, 1.0);
 //    float4 sky = float4(0.34, 0.9, 1.0, 1.0);
