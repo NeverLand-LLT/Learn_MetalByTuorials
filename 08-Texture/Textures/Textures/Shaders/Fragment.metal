@@ -41,8 +41,9 @@ float4 fragment_main(
                      VertexOut in [[stage_in]],
                      texture2d<float> baseColorTexture [[texture(BaseColor)]]
 ) {
-    constexpr sampler textureSampler;
-    float3 baseColor = baseColorTexture.sample(textureSampler, in.uv).rgb;
+//    constexpr sampler textureSampler; // 默认Nearest，没有拉伸
+    constexpr sampler textureSampler(filter::linear, address::repeat);  // 通过拉伸，看不到像素格
+    float3 baseColor = baseColorTexture.sample(textureSampler, in.uv * params.tiling).rgb;
     return float4(baseColor, 1.0);
 //    float4 sky = float4(0.34, 0.9, 1.0, 1.0);
 //    float4 earth = float4(0.29, 0.58, 0.2, 1.0);

@@ -42,6 +42,7 @@ extension Model {
         // make the structures mutable
         var uniforms = vertex
         var params = fragment
+        params.tiling = tiling
         
         uniforms.modelMatrix = transform.modelMatrix
         

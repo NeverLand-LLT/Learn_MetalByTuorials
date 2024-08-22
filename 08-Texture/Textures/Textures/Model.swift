@@ -38,7 +38,7 @@ class Model: Transformable {
   var transform = Transform()
   var meshes: [Mesh] = []
   var name: String = "Untitled"
-
+    var tiling: UInt32 = 1
   init() {}
 
   init(name: String) {

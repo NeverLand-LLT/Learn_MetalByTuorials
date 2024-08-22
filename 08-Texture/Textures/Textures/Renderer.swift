@@ -51,6 +51,7 @@ class Renderer: NSObject {
     lazy var ground: Model = {
        let ground =  Model(name: "ground", primitiveType: .plane)
         ground.setTexture(name: "grass", type: BaseColor)
+        ground.tiling = 16
         return ground
     }()
     
