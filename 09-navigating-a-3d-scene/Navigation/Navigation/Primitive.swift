@@ -31,23 +31,41 @@
 /// THE SOFTWARE.
 
 import MetalKit
+// swiftlint:disable force_try
 
-// Rendering
+enum Primitive {
+  case plane, sphere
+}
+
 extension Model {
-  func render(encoder: MTLRenderCommandEncoder) {
-    encoder.setVertexBuffer(
-      mesh.vertexBuffers[0].buffer,
-      offset: 0,
-      index: 0)
+  convenience init(name: String, primitiveType: Primitive) {
+    let mdlMesh = Self.createMesh(primitiveType: primitiveType)
+    mdlMesh.vertexDescriptor = MDLVertexDescriptor.defaultLayout
+    let mtkMesh = try! MTKMesh(mesh: mdlMesh, device: Renderer.device)
+    let mesh = Mesh(mdlMesh: mdlMesh, mtkMesh: mtkMesh)
+    self.init()
+    self.meshes = [mesh]
+    self.name = name
+  }
 
-    for submesh in mesh.submeshes {
-      encoder.drawIndexedPrimitives(
-        type: .triangle,
-        indexCount: submesh.indexCount,
-        indexType: submesh.indexType,
-        indexBuffer: submesh.indexBuffer.buffer,
-        indexBufferOffset: submesh.indexBuffer.offset
-      )
+  static func createMesh(primitiveType: Primitive) -> MDLMesh {
+    let allocator = MTKMeshBufferAllocator(device: Renderer.device)
+    switch primitiveType {
+    case .plane:
+      return MDLMesh(
+        planeWithExtent: [1, 1, 1],
+        segments: [4, 4],
+        geometryType: .triangles,
+        allocator: allocator)
+    case .sphere:
+      return MDLMesh(
+        sphereWithExtent: [1, 1, 1],
+        segments: [30, 30],
+        inwardNormals: false,
+        geometryType: .triangles,
+        allocator: allocator)
     }
   }
 }
+
+// swiftlint:enable force_try

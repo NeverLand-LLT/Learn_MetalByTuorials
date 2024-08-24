@@ -30,17 +30,28 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-#include <metal_stdlib>
-using namespace metal;
-#import "Common.h"
+import MetalKit
 
-struct VertexOut {
-  float4 position [[position]];
-};
+// swiftlint:disable force_unwrapping
+// swiftlint:disable force_cast
 
-fragment float4 fragment_main(VertexOut in [[stage_in]])
-{
-  return float4(0.2, 0.5, 1.0, 1);
+struct Mesh {
+  var vertexBuffers: [MTLBuffer]
+  var submeshes: [Submesh]
 }
 
+extension Mesh {
+  init(mdlMesh: MDLMesh, mtkMesh: MTKMesh) {
+    var vertexBuffers: [MTLBuffer] = []
+    for mtkMeshBuffer in mtkMesh.vertexBuffers {
+      vertexBuffers.append(mtkMeshBuffer.buffer)
+    }
+    self.vertexBuffers = vertexBuffers
+    submeshes = zip(mdlMesh.submeshes!, mtkMesh.submeshes).map { mesh in
+      Submesh(mdlSubmesh: mesh.0 as! MDLSubmesh, mtkSubmesh: mesh.1)
+    }
+  }
+}
 
+// swiftlint:enable force_unwrapping
+// swiftlint:enable force_cast

@@ -38,19 +38,29 @@ class Renderer: NSObject {
   static var device: MTLDevice!
   static var commandQueue: MTLCommandQueue!
   static var library: MTLLibrary!
-  var modelPipelineState: MTLRenderPipelineState!
-  var quadPipelineState: MTLRenderPipelineState!
 
-  var options: Options
+  var pipelineState: MTLRenderPipelineState!
+  let depthStencilState: MTLDepthStencilState?
 
-  lazy var model: Model = {
-    Model(device: Renderer.device, name: "train.usdz")
+  // the models to render
+  lazy var house: Model = {
+    let house = Model(name: "lowpoly-house.usdz")
+    house.setTexture(name: "barn-color", type: BaseColor)
+    return house
+  }()
+
+  lazy var ground: Model = {
+    let ground = Model(name: "ground", primitiveType: .plane)
+    ground.setTexture(name: "barn-ground", type: BaseColor)
+    ground.tiling = 16
+    return ground
   }()
 
   var timer: Float = 0
   var uniforms = Uniforms()
+  var params = Params()
 
-  init(metalView: MTKView, options: Options) {
+  init(metalView: MTKView) {
     guard
       let device = MTLCreateSystemDefaultDevice(),
       let commandQueue = device.makeCommandQueue() else {
@@ -63,41 +73,46 @@ class Renderer: NSObject {
     // create the shader function library
     let library = device.makeDefaultLibrary()
     Self.library = library
-    let modelVertexFunction = library?.makeFunction(name: "vertex_main")
-    let quadVertexFunction = library?.makeFunction(name: "vertex_quad")
+    let vertexFunction = library?.makeFunction(name: "vertex_main")
     let fragmentFunction =
       library?.makeFunction(name: "fragment_main")
 
-    // create the two pipeline state objects
+    // create the pipeline state object
     let pipelineDescriptor = MTLRenderPipelineDescriptor()
-    pipelineDescriptor.vertexFunction = quadVertexFunction
+    pipelineDescriptor.vertexFunction = vertexFunction
     pipelineDescriptor.fragmentFunction = fragmentFunction
     pipelineDescriptor.colorAttachments[0].pixelFormat =
       metalView.colorPixelFormat
+    pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
+    pipelineDescriptor.vertexDescriptor =
+      MTLVertexDescriptor.defaultLayout
     do {
-      quadPipelineState =
+      pipelineState =
       try device.makeRenderPipelineState(
         descriptor: pipelineDescriptor)
-      pipelineDescriptor.vertexFunction = modelVertexFunction
-      pipelineDescriptor.vertexDescriptor =
-        MTLVertexDescriptor.defaultLayout
-      modelPipelineState =
-        try device.makeRenderPipelineState(
-          descriptor: pipelineDescriptor)
     } catch {
       fatalError(error.localizedDescription)
     }
-    self.options = options
+    depthStencilState = Renderer.buildDepthStencilState()
     super.init()
     metalView.clearColor = MTLClearColor(
-      red: 1.0,
-      green: 1.0,
-      blue: 0.9,
+      red: 0.93,
+      green: 0.97,
+      blue: 1.0,
       alpha: 1.0)
+    metalView.depthStencilPixelFormat = .depth32Float
     metalView.delegate = self
     mtkView(
       metalView,
       drawableSizeWillChange: metalView.drawableSize)
+  }
+
+  static func buildDepthStencilState() -> MTLDepthStencilState? {
+    let descriptor = MTLDepthStencilDescriptor()
+    descriptor.depthCompareFunction = .less
+    descriptor.isDepthWriteEnabled = true
+    return Renderer.device.makeDepthStencilState(
+      descriptor: descriptor)
   }
 }
 
@@ -115,25 +130,9 @@ extension Renderer: MTKViewDelegate {
         far: 100,
         aspect: aspect)
     uniforms.projectionMatrix = projectionMatrix
-  }
 
-  func renderModel(encoder: MTLRenderCommandEncoder) {
-    encoder.setRenderPipelineState(modelPipelineState)
-    timer += 0.005
-    uniforms.viewMatrix = float4x4(translation: [0, 0, -2]).inverse
-    model.position.y = -0.6
-    model.rotation.y = sin(timer)
-    uniforms.modelMatrix = model.transform.modelMatrix
-    encoder.setVertexBytes(
-      &uniforms,
-      length: MemoryLayout<Uniforms>.stride,
-      index: 11)
-    model.render(encoder: encoder)
-  }
-
-  func renderQuad(encoder: MTLRenderCommandEncoder) {
-    encoder.setRenderPipelineState(quadPipelineState)
-    encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6)
+    params.width = UInt32(size.width)
+    params.height = UInt32(size.height)
   }
 
   func draw(in view: MTKView) {
@@ -146,11 +145,24 @@ extension Renderer: MTKViewDelegate {
         return
     }
 
-    if options.renderChoice == .train {
-      renderModel(encoder: renderEncoder)
-    } else {
-      renderQuad(encoder: renderEncoder)
-    }
+    timer += 0.005
+    uniforms.viewMatrix = float4x4(translation: [0, 1.4, -4.0]).inverse
+
+    renderEncoder.setDepthStencilState(depthStencilState)
+    renderEncoder.setRenderPipelineState(pipelineState)
+
+    // update and render
+    house.rotation.y = sin(timer)
+    house.render(encoder: renderEncoder, uniforms: uniforms, params: params)
+
+    ground.scale = 40
+    ground.rotation.z = Float(90).degreesToRadians
+    ground.rotation.y = sin(timer)
+    ground.render(
+      encoder: renderEncoder,
+      uniforms: uniforms,
+      params: params)
+    // end update and render
 
     renderEncoder.endEncoding()
     guard let drawable = view.currentDrawable else {

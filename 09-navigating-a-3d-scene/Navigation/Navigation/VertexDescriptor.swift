@@ -30,45 +30,60 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-#include <metal_stdlib>
-using namespace metal;
-#import "Common.h"
+import MetalKit
 
-struct VertexIn {
-  float4 position [[attribute(0)]];
-};
-
-struct VertexOut {
-  float4 position [[position]];
-};
-
-vertex VertexOut vertex_main(
-  VertexIn in [[stage_in]],
-  constant Uniforms &uniforms [[buffer(11)]])
-{
-  float4 position =
-    uniforms.projectionMatrix * uniforms.viewMatrix
-    * uniforms.modelMatrix * in.position;
-  VertexOut out {
-    .position = position
-  };
-  return out;
+extension MTLVertexDescriptor {
+  static var defaultLayout: MTLVertexDescriptor? {
+    MTKMetalVertexDescriptorFromModelIO(.defaultLayout)
+  }
 }
 
-constant float3 vertices[6] = {
-  float3(-1,  1,  0),    // triangle 1
-  float3( 1, -1,  0),
-  float3(-1, -1,  0),
-  float3(-1,  1,  0),    // triangle 2
-  float3( 1,  1,  0),
-  float3( 1, -1,  0)};
+extension MDLVertexDescriptor {
+  static var defaultLayout: MDLVertexDescriptor {
+    let vertexDescriptor = MDLVertexDescriptor()
+    var offset = 0
+    vertexDescriptor.attributes[Position.index] = MDLVertexAttribute(
+      name: MDLVertexAttributePosition,
+      format: .float3,
+      offset: 0,
+      bufferIndex: VertexBuffer.index)
+    offset += MemoryLayout<float3>.stride
 
-vertex VertexOut vertex_quad(uint vertexID [[vertex_id]])
-{
-  float4 position = float4(vertices[vertexID], 1);
-  VertexOut out {
-    .position = position
-  };
-  return out;
+    vertexDescriptor.attributes[Normal.index] = MDLVertexAttribute(
+      name: MDLVertexAttributeNormal,
+      format: .float3,
+      offset: offset,
+      bufferIndex: VertexBuffer.index)
+    offset += MemoryLayout<float3>.stride
+    vertexDescriptor.layouts[VertexBuffer.index]
+      = MDLVertexBufferLayout(stride: offset)
+
+    vertexDescriptor.attributes[UV.index] = MDLVertexAttribute(
+      name: MDLVertexAttributeTextureCoordinate,
+      format: .float2,
+      offset: 0,
+      bufferIndex: UVBuffer.index)
+    vertexDescriptor.layouts[UVBuffer.index]
+      = MDLVertexBufferLayout(stride: MemoryLayout<float2>.stride)
+
+    return vertexDescriptor
+  }
 }
 
+extension Attributes {
+  var index: Int {
+    return Int(self.rawValue)
+  }
+}
+
+extension BufferIndices {
+  var index: Int {
+    return Int(self.rawValue)
+  }
+}
+
+extension TextureIndices {
+  var index: Int {
+    return Int(self.rawValue)
+  }
+}
