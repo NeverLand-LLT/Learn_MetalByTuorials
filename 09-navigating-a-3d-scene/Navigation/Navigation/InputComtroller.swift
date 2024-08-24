@@ -1,15 +1,15 @@
 ///// Copyright (c) 2023 Kodeco Inc.
-/// 
+///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
 /// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 /// copies of the Software, and to permit persons to whom the Software is
 /// furnished to do so, subject to the following conditions:
-/// 
+///
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
-/// 
+///
 /// Notwithstanding the foregoing, you may not use, copy, modify, merge, publish,
 /// distribute, sublicense, create a derivative work, and/or sell copies of the
 /// Software in any work that is designed, intended, or marketed for pedagogical or
@@ -17,7 +17,7 @@
 /// or information technology.  Permission for such use, copying, modification,
 /// merger, publication, distribution, sublicensing, creation of derivative works,
 /// or sale is expressly withheld.
-/// 
+///
 /// This project and source code may use libraries or frameworks that are
 /// released under various Open-Source licenses. Use of those libraries and
 /// frameworks are governed by their own individual licenses.
@@ -31,47 +31,37 @@
 /// THE SOFTWARE.
 
 import Foundation
-import MetalKit
+import GameController
 
-struct GameScene {
+class InputComtroller {
+    static let shared = InputComtroller()
     
-    var camera = LYCamera()
+    var keysPressed: Set<GCKeyCode> = []
     
-    lazy var house: Model = {
-       let house = Model(name: "lowpoly-house.usdz")
-        house.setTexture(name: "barn-color", type: BaseColor)
-        return house
-    }()
-    
-    lazy var ground: Model = {
-        let ground = Model(name: "ground", primitiveType: .plane)
-        ground.setTexture(name: "barn-ground", type: BaseColor)
-        ground.tiling = 16
-        ground.transform.scale = 40
-        ground.transform.rotation.z = Float(90).degreesToRadians
-        return ground
-    }()
-    
-    lazy var models: [Model] = [ground, house]
-    
-    init() {
-        camera.position = [0, 1.4, -4.0]
-    }
-    
-    mutating func update(deltaTime: Float) {
-//        ground.rotation.y = sin(deltaTime)
-//        house.rotation.y = sin(deltaTime)
-        camera.rotation.y = sin(deltaTime)
+    private init() {
+        let center = NotificationCenter.default
+        center.addObserver(
+            forName: .GCKeyboardDidConnect,
+            object: nil,
+            queue: nil) { notification in
+                let keyboard = notification.object as? GCKeyboard
+                keyboard?.keyboardInput?.keyChangedHandler = { _, _, keyCode, pressed in
+                    if pressed {
+                        self.keysPressed.insert(keyCode)
+                    } else {
+                        self.keysPressed.remove(keyCode)
+                    }
+                }
+            }
         
-        // 测试按键是否有响应，与渲染无关
-//        if InputComtroller.shared.keysPressed.contains(.keyH) {
-//            print("H Key pressed")
-//        }
+        // 解决点击会发送嘟嘟声音，
+        /*
+         仅在 macOS 上，您可以通过处理任何按键并告诉系统在按键时不需要采取操作来中断视图的响应程序链。对于 iPadOS，您不需要执行此操作，因为 iPad 不会发出键盘噪音。、
+        注意：您可以在此代码中将键添加到keysPressed，而不是使用观察器。然而，这在 iPadOS 上不起作用，并且 GCKeyCode 比 NSEvent 为您提供的原始键值更容易阅读。
+         */
+#if os(macOS)
+        NSEvent.addLocalMonitorForEvents(
+            matching: [.keyUp, .keyDown]) { _ in nil }
+#endif
     }
-    
-    mutating func update(size: CGSize) {
-        camera.update(size: size)
-    }
-    
 }
-
