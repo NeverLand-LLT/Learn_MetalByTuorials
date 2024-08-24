@@ -28,7 +28,8 @@
 		827621B02AA8779E00CE91D1 /* Fragment.metal in Sources */ = {isa = PBXBuildFile; fileRef = 827621AF2AA8779E00CE91D1 /* Fragment.metal */; };
 		9AE4F3D42C79F3C800F8B2D2 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE4F3D32C79F3C800F8B2D2 /* GameScene.swift */; };
 		9AE4F3D62C79F79200F8B2D2 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE4F3D52C79F79200F8B2D2 /* Camera.swift */; };
-		9AE4F3D82C7A26F800F8B2D2 /* InputComtroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE4F3D72C7A26F800F8B2D2 /* InputComtroller.swift */; };
+		9AE4F3D82C7A26F800F8B2D2 /* InputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE4F3D72C7A26F800F8B2D2 /* InputController.swift */; };
+		9AE4F3DA2C7A302D00F8B2D2 /* Movement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE4F3D92C7A302D00F8B2D2 /* Movement.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,7 +58,8 @@
 		827621AF2AA8779E00CE91D1 /* Fragment.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Fragment.metal; sourceTree = "<group>"; };
 		9AE4F3D32C79F3C800F8B2D2 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		9AE4F3D52C79F79200F8B2D2 /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
-		9AE4F3D72C7A26F800F8B2D2 /* InputComtroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputComtroller.swift; sourceTree = "<group>"; };
+		9AE4F3D72C7A26F800F8B2D2 /* InputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputController.swift; sourceTree = "<group>"; };
+		9AE4F3D92C7A302D00F8B2D2 /* Movement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Movement.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,7 +119,8 @@
 		824770E22AA7FA0B0095AB72 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
-				9AE4F3D72C7A26F800F8B2D2 /* InputComtroller.swift */,
+				9AE4F3D92C7A302D00F8B2D2 /* Movement.swift */,
+				9AE4F3D72C7A26F800F8B2D2 /* InputController.swift */,
 				9AE4F3D52C79F79200F8B2D2 /* Camera.swift */,
 				9AE4F3D32C79F3C800F8B2D2 /* GameScene.swift */,
 				824770E32AA7FA0B0095AB72 /* NavigationApp.swift */,
@@ -269,10 +272,11 @@
 				824771002AA80C930095AB72 /* MetalView.swift in Sources */,
 				827621B02AA8779E00CE91D1 /* Fragment.metal in Sources */,
 				824770E42AA7FA0B0095AB72 /* NavigationApp.swift in Sources */,
+				9AE4F3DA2C7A302D00F8B2D2 /* Movement.swift in Sources */,
 				827621AE2AA8779800CE91D1 /* Vertex.metal in Sources */,
 				822EF52F2AA86872008CC2C8 /* Rendering.swift in Sources */,
 				82133A392AAC046600D7C004 /* Submesh.swift in Sources */,
-				9AE4F3D82C7A26F800F8B2D2 /* InputComtroller.swift in Sources */,
+				9AE4F3D82C7A26F800F8B2D2 /* InputController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

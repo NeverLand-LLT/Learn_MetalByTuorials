@@ -61,6 +61,8 @@ class Renderer: NSObject {
   var timer: Float = 0
   var uniforms = Uniforms()
   var params = Params()
+    
+    var lastTime: Double = CFAbsoluteTimeGetCurrent()
 
   init(metalView: MTKView) {
     guard
@@ -151,14 +153,18 @@ extension Renderer: MTKViewDelegate {
         return
     }
 
-    timer += 0.005
+//    timer += 0.005
 //    uniforms.viewMatrix = float4x4(translation: [0, 1.4, -4.0]).inverse
 
     renderEncoder.setDepthStencilState(depthStencilState)
     renderEncoder.setRenderPipelineState(pipelineState)
 
+      let currentTime = CFAbsoluteTimeGetCurrent()
+      let deltaTime = Float(currentTime - lastTime)
+      lastTime = currentTime
+      
     // update and render
-      scene.update(deltaTime: timer)
+      scene.update(deltaTime: deltaTime)
       uniforms.viewMatrix = scene.camera.viewMatrix
       uniforms.projectionMatrix = scene.camera.projectionMatrix
       for model in scene.models {

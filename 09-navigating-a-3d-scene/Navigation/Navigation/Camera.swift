@@ -61,7 +61,10 @@ struct LYCamera: Camera {
         
     }
     
-    func update(deltaTime: Float) {
-        
+    mutating func update(deltaTime: Float) {
+        let transform = updateInput(deltaTime: deltaTime)
+        rotation += transform.rotation
     }
 }
+
+extension LYCamera: Movement {}

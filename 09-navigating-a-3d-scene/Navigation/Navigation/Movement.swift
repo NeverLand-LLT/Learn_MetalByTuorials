@@ -31,37 +31,31 @@
 /// THE SOFTWARE.
 
 import Foundation
-import GameController
 
-class InputComtroller {
-    static let shared = InputComtroller()
+
+enum Settings {
+    static var rotationSpeed: Float { 2.0 } // 相机一秒钟应旋转多少弧度。
+    static var translationSpeed: Float { 3.0 } // 相机一秒移动多少距离
+    static var mouseScrollSensitivity: Float { 0.1 } // 用于调整 鼠标跟着和滚动的设置
+    static var mousePanSensitivity: Float { 0.008 }
+}
+
+protocol Movement where Self: Transformable {
     
-    var keysPressed: Set<GCKeyCode> = []
-    
-    private init() {
-        let center = NotificationCenter.default
-        center.addObserver(
-            forName: .GCKeyboardDidConnect,
-            object: nil,
-            queue: nil) { notification in
-                let keyboard = notification.object as? GCKeyboard
-                keyboard?.keyboardInput?.keyChangedHandler = { _, _, keyCode, pressed in
-                    if pressed {
-                        self.keysPressed.insert(keyCode)
-                    } else {
-                        self.keysPressed.remove(keyCode)
-                    }
-                }
-            }
-        
-        // 解决点击会发送嘟嘟声音，
-        /*
-         仅在 macOS 上，您可以通过处理任何按键并告诉系统在按键时不需要采取操作来中断视图的响应程序链。对于 iPadOS，您不需要执行此操作，因为 iPad 不会发出键盘噪音。、
-        注意：您可以在此代码中将键添加到keysPressed，而不是使用观察器。然而，这在 iPadOS 上不起作用，并且 GCKeyCode 比 NSEvent 为您提供的原始键值更容易阅读。
-         */
-#if os(macOS)
-        NSEvent.addLocalMonitorForEvents(
-            matching: [.keyUp, .keyDown]) { _ in nil }
-#endif
+}
+
+extension Movement {
+    // 默认扩展
+    func updateInput(deltaTime: Float) -> Transform {
+        var transform = Transform()
+        let rotationAmount = deltaTime * Settings.rotationSpeed
+        let input = InputController.shared
+        if input.keysPressed.contains(.leftArrow) {
+            transform.rotation.y -= rotationAmount
+        }
+        if input.keysPressed.contains(.rightArrow) {
+            transform.rotation.y += rotationAmount
+        }
+        return transform
     }
 }
