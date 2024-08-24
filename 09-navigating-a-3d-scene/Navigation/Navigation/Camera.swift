@@ -69,6 +69,7 @@ struct LYCamera: Camera {
 }
 
 
+// 透视Camera
 struct ArcballCamera: Camera {
     //    var viewMatrix: float4x4 {
     //        (float4x4(rotation:  rotation)) * float4x4(translation: position).inverse
@@ -131,10 +132,47 @@ struct ArcballCamera: Camera {
         }
         
         let rotateMatrix = float4x4(
-        rotationYXZ: [-rotation.x, rotation.y, 0])
+            rotationYXZ: [-rotation.x, rotation.y, 0])
         let distanceVector = float4(0, 0, -distance, 0)
         let rotatedVector = rotateMatrix * distanceVector
         position = target + rotatedVector.xyz
+    }
+}
+
+// 透视镜头
+struct OrthographicCamera: Camera, Movement {
+    // 宽高比是窗口的宽度与高度的比率，viewSize 是场景单位大小。 将计算盒子形状的投影平截头
+    
+    var transform = Transform()
+    var aspect: CGFloat = 1
+    var viewSize: CGFloat = 10
+    var near: Float = 0.1
+    var far: Float = 100
+    var viewMatrix: float4x4 {
+        (float4x4(translation: position) *
+         float4x4(rotation: rotation)).inverse
+    }
+    
+    var projectionMatrix: float4x4 {
+        let rect = CGRect(
+            x: -viewSize * aspect * 0.5,
+            y: viewSize * 0.5,
+            width: viewSize * aspect,
+            height: viewSize)
+        return float4x4(orthographic: rect, near: near, far: far)
+    }
+    
+    mutating func update(size: CGSize) {
+        aspect = size.width / size.height
+    }
+    
+    mutating func update(deltaTime: Float) {
+        let transform = updateInput(deltaTime: deltaTime)
+        position += transform.position
+        let input = InputController.shared
+        let zoom = input.mouseScroll.x + input.mouseScroll.y
+        viewSize -= CGFloat(zoom)
+        input.mouseScroll = .zero
     }
 }
 
