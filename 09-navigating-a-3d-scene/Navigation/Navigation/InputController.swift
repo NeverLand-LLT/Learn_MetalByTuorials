@@ -34,9 +34,19 @@ import Foundation
 import GameController
 
 class InputController {
+    struct Point {
+        var x: Float
+        var y: Float
+        static let zero = Point(x: 0, y: 0)
+    }
+    
     static let shared = InputController()
     
     var keysPressed: Set<GCKeyCode> = []
+    
+    var leftMouseDown = false
+    var mouseDelta = Point.zero
+    var mouseScroll = Point.zero
     
     private init() {
         let center = NotificationCenter.default
@@ -57,11 +67,33 @@ class InputController {
         // 解决点击会发送嘟嘟声音，
         /*
          仅在 macOS 上，您可以通过处理任何按键并告诉系统在按键时不需要采取操作来中断视图的响应程序链。对于 iPadOS，您不需要执行此操作，因为 iPad 不会发出键盘噪音。、
-        注意：您可以在此代码中将键添加到keysPressed，而不是使用观察器。然而，这在 iPadOS 上不起作用，并且 GCKeyCode 比 NSEvent 为您提供的原始键值更容易阅读。
+         注意：您可以在此代码中将键添加到keysPressed，而不是使用观察器。然而，这在 iPadOS 上不起作用，并且 GCKeyCode 比 NSEvent 为您提供的原始键值更容易阅读。
          */
 #if os(macOS)
         NSEvent.addLocalMonitorForEvents(
             matching: [.keyUp, .keyDown]) { _ in nil }
 #endif
+        
+        
+        center.addObserver(forName: .GCMouseDidConnect, object: nil, queue: nil) { notification in
+            let mouse = notification.object as? GCMouse
+            
+            // 当用户按住鼠标左键时进行记录
+            mouse?.mouseInput?.leftButton.pressedChangedHandler = { _, _, pressed in
+                self.leftMouseDown = pressed
+            }
+            // 2 跟踪鼠标移动
+            mouse?.mouseInput?.mouseMovedHandler = { _, deltaX, deltaY in
+                self.mouseDelta = Point(x: deltaX, y: deltaY)
+            }
+            // 3 记录滚轮 xValue 和 yValue 是 -1 到 1 之间的标准化值。如果您使用游戏控制器而不是鼠标，则第一个参数是 dpad，它告诉您哪个方向键元素发生了更改。
+            mouse?.mouseInput?.scroll.valueChangedHandler = { _, xValue,
+                yValue in
+                self.mouseScroll.x = xValue
+                self.mouseScroll.y = yValue
+            }
+        }
+        
+        
     }
 }

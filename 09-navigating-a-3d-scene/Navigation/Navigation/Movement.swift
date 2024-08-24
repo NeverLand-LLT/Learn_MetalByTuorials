@@ -65,9 +65,6 @@ extension Movement {
             transform.rotation.y += rotationAmount
         }
         
-       
-        
-        
         var direction: float3 = .zero
         if input.keysPressed.contains(.keyW) {
             direction.z += 1
