@@ -44,13 +44,15 @@ class Renderer: NSObject {
     
     // the models to render
     lazy var house: Model = {
-        Model(name: "lowpoly-house.usdz")
+        let house = Model(name: "lowpoly-house.usdz")
+        house.setTexture(name: "barn-color", type: BaseColor)
+        return house
     }()
     
     
     lazy var ground: Model = {
        let ground =  Model(name: "ground", primitiveType: .plane)
-        ground.setTexture(name: "grass", type: BaseColor)
+        ground.setTexture(name: "barn-ground", type: BaseColor)
         ground.tiling = 16
         return ground
     }()
