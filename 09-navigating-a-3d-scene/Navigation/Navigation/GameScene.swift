@@ -35,7 +35,7 @@ import MetalKit
 
 struct GameScene {
     
-    var camera = LYCamera()
+    var camera = ArcballCamera()
     
     lazy var house: Model = {
        let house = Model(name: "lowpoly-house.usdz")
@@ -56,6 +56,8 @@ struct GameScene {
     
     init() {
         camera.position = [0, 1.4, -4.0]
+        camera.distance = length(camera.position)
+        camera.target = [0, 1.2, 0]
     }
     
     mutating func update(deltaTime: Float) {
