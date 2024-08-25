@@ -31,58 +31,46 @@
 /// THE SOFTWARE.
 
 import Foundation
-import MetalKit
 
-struct GameScene {
-    
-    var camera = PlayerCamera()
-    
-    lazy var house: Model = {
-       let house = Model(name: "lowpoly-house.usdz")
-        house.setTexture(name: "barn-color", type: BaseColor)
-        return house
-    }()
-    
-    lazy var ground: Model = {
-        let ground = Model(name: "ground", primitiveType: .plane)
-        ground.setTexture(name: "barn-ground", type: BaseColor)
-        ground.tiling = 16
-        ground.transform.scale = 40
-        ground.transform.rotation.z = Float(90).degreesToRadians
-        return ground
-    }()
-    
-    lazy var models: [Model] = [ground, house]
-    
-    init() {
-//        camera.position = [0, 1.4, -4.0]
-//        camera.distance = length(camera.position)
-//        camera.target = [0, 1.2, 0]
-        
-        // 透视视角，会看到没有地面
-        camera.position = [3, 2, 0]
-        camera.rotation.y = -.pi / 2
-        
-//        camera.position = [0, 2, 0]
-//        camera.rotation.x = .pi / 2
-        
+struct PlayerCamera: Camera {
+  var transform = Transform()
+  var aspect: Float = 1.0
+  var fov = Float(70).degreesToRadians
+  var near: Float = 0.1
+  var far: Float = 100
+  var projectionMatrix: float4x4 {
+    float4x4(
+      projectionFov: fov,
+      near: near,
+      far: far,
+      aspect: aspect)
+  }
+
+  mutating func update(size: CGSize) {
+    aspect = Float(size.width / size.height)
+  }
+
+  var viewMatrix: float4x4 {
+    let rotateMatrix = float4x4(
+      rotationYXZ: [-rotation.x, rotation.y, 0])
+    return (float4x4(translation: position) * rotateMatrix).inverse
+  }
+
+  mutating func update(deltaTime: Float) {
+    let transform = updateInput(deltaTime: deltaTime)
+    rotation += transform.rotation
+    position += transform.position
+    let input = InputController.shared
+    if input.leftMouseDown {
+      let sensitivity = Settings.mousePanSensitivity
+      rotation.x += input.mouseDelta.y * sensitivity
+      rotation.y += input.mouseDelta.x * sensitivity
+      rotation.x = max(-.pi / 2, min(rotation.x, .pi / 2))
+      input.mouseDelta = .zero
     }
-    
-    mutating func update(deltaTime: Float) {
-//        ground.rotation.y = sin(deltaTime)
-//        house.rotation.y = sin(deltaTime)
-//        camera.rotation.y = sin(deltaTime)
-        camera.update(deltaTime: deltaTime)
-        
-        // 测试按键是否有响应，与渲染无关
-//        if InputComtroller.shared.keysPressed.contains(.keyH) {
-//            print("H Key pressed")
-//        }
-    }
-    
-    mutating func update(size: CGSize) {
-        camera.update(size: size)
-    }
-    
+
+  }
 }
+
+extension PlayerCamera: Movement { }
 
